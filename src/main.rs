@@ -9,3 +9,19 @@ use serde::Serialize;
 struct ToDoList {
     items: Vec<ToDoItem>,
 }
+
+#[derive(Serialize)]
+struct ToDoItem {
+    id: i64,
+    item: String,
+}
+
+#[derive(Serialize)]
+struct StatusMessage {
+    message: String,
+}
+
+#[get("/")]
+fn index() -> &'static str {
+    "Hello, world!"
+}
