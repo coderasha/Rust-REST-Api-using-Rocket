@@ -25,3 +25,24 @@ struct StatusMessage {
 fn index() -> &'static str {
     "Hello, world!"
 }
+
+#[get("/todo")]
+fn fetch_all_todo_items() -> Result<Json<ToDoList>, String> {
+    let db_connection = match Connection::open("data.sqlite") {
+        Ok(connection) => connection,
+        Err(_) => {
+            return Err(String::from("Failed to connect to database"));
+        }
+    };
+
+    let mut statement = match db_connection.prepare("select id, item from todo_list;") {
+        Ok(statement) => statement,
+        Err(_) => return Err("Failed to prepare query".into()),
+    };
+
+    let results = statement.query_map(rusqlite::NO_PARAMS, |row| {
+        Ok(ToDoItem {
+            id: row.get(0)?,
+            item: row.get(1)?,
+        })
+    });
